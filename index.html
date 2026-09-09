@@ -198,25 +198,57 @@ body{
   z-index:5;
 }
 
-/* قلب‌های روی عکس دعوتنامه */
-.invitation-heart {
+/* قلب‌های روی عکس */
+.falling-heart {
   position: absolute;
   pointer-events: none;
-  font-size: 40px;
-  opacity: 0.8;
-  animation: heartFall 3s ease-in forwards;
+  font-size: 35px;
+  opacity: 0.9;
   z-index: 4;
 }
 
 @keyframes heartFall {
   0% {
-    transform: translateY(-100px) scale(1);
+    transform: translateY(-80px) rotateZ(0deg) scale(1);
     opacity: 1;
   }
   100% {
-    transform: translateY(400px) scale(0.3);
+    transform: translateY(600px) rotateZ(720deg) scale(0);
     opacity: 0;
   }
+}
+
+.falling-heart.animate {
+  animation: heartFall 3.5s ease-in forwards;
+}
+
+/* فشفشه‌ها */
+.firework {
+  position: absolute;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.firework-particle {
+  position: absolute;
+  pointer-events: none;
+  font-size: 20px;
+  opacity: 1;
+}
+
+@keyframes explode {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty)) scale(0);
+    opacity: 0;
+  }
+}
+
+.firework-particle.animate {
+  animation: explode 1.5s ease-out forwards;
 }
 
 .close-btn{
@@ -315,41 +347,107 @@ body{
 
     weddingMusic.volume = 0.5;
 
-    // ایجاد قلب‌های متحرک روی دعوتنامه
-    function createHeartOnInvitation() {
-      const hearts = ['💕', '💗', '❤️', '💖'];
+    // ایجاد قلب‌های متحرک
+    function createFallingHeart() {
+      const hearts = ['💕', '💗', '❤️', '💖', '💝'];
       const heart = document.createElement('div');
-      heart.className = 'invitation-heart';
+      heart.className = 'falling-heart';
       heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
       
-      // موقعیت تصادفی در سمت عکس
-      const randomX = Math.random() * (invitationContent.offsetWidth - 50) + 25;
+      const randomX = Math.random() * (invitationContent.offsetWidth - 50);
       heart.style.left = randomX + 'px';
       heart.style.top = '-50px';
       
       invitationContent.appendChild(heart);
       
-      // حذف قلب بعد از انیمیشن
+      // شروع انیمیشن
+      setTimeout(() => {
+        heart.classList.add('animate');
+      }, 10);
+      
+      // حذف بعد از انیمیشن
       setTimeout(() => {
         heart.remove();
-      }, 3000);
+      }, 3500);
     }
 
-    // شروع باران قلب‌ها
-    let heartInterval = null;
-    function startHeartRain() {
-      if (heartInterval) return;
+    // ایجاد فشفشه
+    function createFirework(x, y) {
+      const fireworks = ['✨', '💥', '⭐', '🌟', '💫'];
+      const colors = ['#ff69b4', '#ff1493', '#ffb6c1', '#ffd700', '#ff6347'];
       
-      createHeartOnInvitation(); // قلب اول
-      heartInterval = setInterval(createHeartOnInvitation, 500); // هر 500ms یک قلب
+      for (let i = 0; i < 12; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'firework-particle';
+        particle.textContent = fireworks[Math.floor(Math.random() * fireworks.length)];
+        particle.style.color = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.left = x + 'px';
+        particle.style.top = y + 'px';
+        particle.style.fontSize = (15 + Math.random() * 15) + 'px';
+        
+        // زاویه تصادفی برای انفجار
+        const angle = (i / 12) * Math.PI * 2;
+        const distance = 80 + Math.random() * 40;
+        const tx = Math.cos(angle) * distance;
+        const ty = Math.sin(angle) * distance;
+        
+        particle.style.setProperty('--tx', tx + 'px');
+        particle.style.setProperty('--ty', ty + 'px');
+        
+        invitationContent.appendChild(particle);
+        
+        setTimeout(() => {
+          particle.classList.add('animate');
+        }, 10);
+        
+        setTimeout(() => {
+          particle.remove();
+        }, 1500);
+      }
     }
 
-    // توقف باران قلب‌ها
-    function stopHeartRain() {
+    // شروع باران قلب‌ها و فشفشه‌ها
+    let heartInterval = null;
+    let fireworkInterval = null;
+
+    function startCelebration() {
+      // قلب اول
+      createFallingHeart();
+      
+      // فشفشه در وسط
+      const centerX = invitationContent.offsetWidth / 2;
+      const centerY = invitationContent.offsetHeight / 2;
+      createFirework(centerX, centerY);
+      
+      // باران قلب‌ها
+      heartInterval = setInterval(() => {
+        createFallingHeart();
+      }, 400);
+      
+      // فشفشه‌های اضافی در نقاط تصادفی
+      fireworkInterval = setInterval(() => {
+        const randomX = Math.random() * invitationContent.offsetWidth;
+        const randomY = Math.random() * invitationContent.offsetHeight * 0.6;
+        createFirework(randomX, randomY);
+      }, 600);
+    }
+
+    function stopCelebration() {
       if (heartInterval) {
         clearInterval(heartInterval);
         heartInterval = null;
       }
+      if (fireworkInterval) {
+        clearInterval(fireworkInterval);
+        fireworkInterval = null;
+      }
+      
+      // حذف تمام عناصر باقی‌مانده
+      const allHearts = invitationContent.querySelectorAll('.falling-heart');
+      const allParticles = invitationContent.querySelectorAll('.firework-particle');
+      
+      allHearts.forEach(heart => heart.remove());
+      allParticles.forEach(particle => particle.remove());
     }
 
     // باز کردن پاکت
@@ -358,24 +456,20 @@ body{
       
       setTimeout(() => {
         invitation.classList.add('show');
-        startHeartRain(); // شروع قلب‌ها
+        startCelebration(); // شروع جشن با قلب‌ها و فشفشه‌ها
         
-        // پخش موسیقی خودکار
+        // پخش موسیقی
         weddingMusic.play().catch(err => {
           console.log('خطا:', err);
         });
       }, 300);
     });
 
-    // بستن دعوت‌نامه
+    // بستن دعوتنامه
     closeBtn.addEventListener('click', function(e) {
       e.stopPropagation();
       invitation.classList.remove('show');
-      stopHeartRain(); // توقف قلب‌ها
-      
-      // حذف تمام قلب‌های باقی‌مانده
-      const allHearts = invitationContent.querySelectorAll('.invitation-heart');
-      allHearts.forEach(heart => heart.remove());
+      stopCelebration();
       
       setTimeout(() => {
         envelope.classList.remove('opened');
