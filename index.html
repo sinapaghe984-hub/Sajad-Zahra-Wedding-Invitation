@@ -441,12 +441,12 @@ body{
     const locationBtn = document.getElementById('locationBtn');
     const locationMenu = document.getElementById('locationMenu');
 
-    // لینک‌های نقشه‌ها
+    // لینک‌های نقشه‌ها با مختصات دقیق
     const googleMapsLink = 'https://maps.app.goo.gl/8dzN2KYJNfc1ViNf7';
-    const neshanCoords = '32.6832,51.4031'; // مختصات اصفهان
-    const neshanLink = `https://neshan.org/map?query=${neshanCoords}`;
-    const baladCoords = '32.6832,51.4031'; // مختصات اصفهان
-    const baladLink = `https://balad.ir/search?address=اصفهان`;
+    const lat = '32.707895';
+    const lng = '51.732378';
+    const neshanLink = `https://neshan.org/map?lat=${lat}&lng=${lng}&zoom=15`;
+    const baladLink = `https://balad.ir/search?address=%D9%85%D8%AE%D8%AA%D8%B5%D8%A7%D8%AA%2032.707895%2C51.732378`;
 
     weddingMusic.volume = 0.5;
 
