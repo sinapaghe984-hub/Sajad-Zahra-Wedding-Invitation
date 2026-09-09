@@ -179,7 +179,7 @@ body{
   background:#fff;
   border-radius:20px;
   box-shadow:0 30px 80px rgba(0,0,0,0.5);
-  overflow:hidden;
+  overflow:visible;
   animation:slideUp 0.8s ease;
   border:3px solid #ffb6c1;
 }
@@ -200,16 +200,16 @@ body{
 
 /* قلب‌های روی عکس */
 .falling-heart {
-  position: absolute;
+  position: fixed;
   pointer-events: none;
   font-size: 35px;
   opacity: 0.9;
-  z-index: 4;
+  z-index: 999;
 }
 
 @keyframes heartFall {
   0% {
-    transform: translateY(-80px) rotateZ(0deg) scale(1);
+    transform: translateY(0) rotateZ(0deg) scale(1);
     opacity: 1;
   }
   100% {
@@ -224,10 +224,11 @@ body{
 
 /* فشفشه‌ها */
 .firework-particle {
-  position: absolute;
+  position: fixed;
   pointer-events: none;
   font-size: 20px;
   opacity: 1;
+  z-index: 998;
 }
 
 @keyframes explode {
@@ -245,61 +246,26 @@ body{
   animation: explode 1.5s ease-out forwards;
 }
 
-/* دکمه‌های اطلاعات */
-.info-buttons{
-  position:absolute;
-  bottom:30px;
-  left:0;
-  right:0;
-  display:flex;
-  justify-content:center;
-  gap:15px;
-  flex-wrap:wrap;
-  padding:0 20px;
-  z-index:6;
-}
-
-.info-btn{
-  background:linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
-  border:none;
-  color:#fff;
-  padding:12px 24px;
-  border-radius:25px;
-  cursor:pointer;
-  font-size:14px;
-  font-weight:bold;
-  transition:all 0.3s ease;
-  box-shadow:0 5px 15px rgba(196, 69, 105, 0.4);
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-family:'B Nazanin','Tahoma','Arial',sans-serif;
-}
-
-.info-btn:hover{
-  transform:translateY(-3px);
-  box-shadow:0 8px 20px rgba(196, 69, 105, 0.6);
-}
-
-.info-btn:active{
-  transform:translateY(-1px);
-}
-
 /* منو لوکیشن */
 .location-menu{
   position:absolute;
-  bottom:90px;
+  bottom:80px;
   left:50%;
   transform:translateX(-50%);
   background:#fff;
   border-radius:15px;
   box-shadow:0 10px 40px rgba(0,0,0,0.3);
   overflow:hidden;
-  z-index:7;
-  min-width:200px;
+  z-index:20;
+  min-width:180px;
   opacity:0;
   pointer-events:none;
   transition:all 0.3s ease;
+}
+
+.location-menu.show{
+  opacity:1;
+  pointer-events:all;
   animation:slideUpMenu 0.3s ease forwards;
 }
 
@@ -314,17 +280,12 @@ body{
   }
 }
 
-.location-menu.show{
-  opacity:1;
-  pointer-events:all;
-}
-
-.location-menu button{
+.location-menu a{
+  display:block;
   width:100%;
-  border:none;
-  background:none;
   padding:15px 20px;
   text-align:right;
+  text-decoration:none;
   cursor:pointer;
   font-size:15px;
   font-family:'B Nazanin','Tahoma','Arial',sans-serif;
@@ -334,18 +295,42 @@ body{
   border-bottom:1px solid #eee;
 }
 
-.location-menu button:last-child{
+.location-menu a:last-child{
   border-bottom:none;
 }
 
-.location-menu button:hover{
+.location-menu a:hover{
   background:#f5f5f5;
   padding-right:30px;
 }
 
-.location-menu button:before{
-  content:'📍 ';
-  margin-left:10px;
+/* دکمه لوکیشن کوچیک */
+.location-btn{
+  position:absolute;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+  border:none;
+  color:#fff;
+  padding:10px 20px;
+  border-radius:20px;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:bold;
+  transition:all 0.3s ease;
+  box-shadow:0 5px 15px rgba(196, 69, 105, 0.4);
+  z-index:15;
+  font-family:'B Nazanin','Tahoma','Arial',sans-serif;
+}
+
+.location-btn:hover{
+  transform:translateX(-50%) translateY(-3px);
+  box-shadow:0 8px 20px rgba(196, 69, 105, 0.6);
+}
+
+.location-btn:active{
+  transform:translateX(-50%) translateY(-1px);
 }
 
 .close-btn{
@@ -363,7 +348,7 @@ body{
   align-items:center;
   justify-content:center;
   transition:all 0.3s ease;
-  z-index:10;
+  z-index:25;
   color:#fff;
   box-shadow:0 5px 15px rgba(196, 69, 105, 0.4);
 }
@@ -396,8 +381,7 @@ body{
   .envelope-icon{font-size:35px;bottom:20px;}
   .invitation-content{width:95%;max-height:95vh;}
   .close-btn{width:40px;height:40px;font-size:24px;}
-  .info-buttons{gap:10px;}
-  .info-btn{padding:10px 18px;font-size:13px;}
+  .location-btn{padding:8px 16px;font-size:12px;}
 }
 
 @media (max-width:480px){
@@ -407,8 +391,7 @@ body{
   .envelope-icon{font-size:30px;}
   .close-btn{width:35px;height:35px;font-size:20px;}
   .hint-text {font-size:12px;}
-  .info-buttons{gap:8px;}
-  .info-btn{padding:8px 14px;font-size:12px;}
+  .location-btn{padding:8px 14px;font-size:11px;}
 }
 </style>
 </head>
@@ -435,16 +418,13 @@ body{
       
       <!-- منو لوکیشن -->
       <div class="location-menu" id="locationMenu">
-        <button id="neshan-btn">🗺️ نشان</button>
-        <button id="google-btn">🗺️ گوگل مپ</button>
-        <button id="balad-btn">🗺️ بلد</button>
+        <a id="neshan-link" target="_blank">🗺️ نشان</a>
+        <a id="google-link" target="_blank" href="https://maps.app.goo.gl/8dzN2KYJNfc1ViNf7">🗺️ گوگل مپ</a>
+        <a id="balad-link" target="_blank">🗺️ بلد</a>
       </div>
       
-      <!-- دکمه‌های اطلاعات -->
-      <div class="info-buttons">
-        <button class="info-btn" id="locationToggle">📍 مکان</button>
-        <button class="info-btn" id="shareBtn">📤 اشتراک‌گذاری</button>
-      </div>
+      <!-- دکمه لوکیشن -->
+      <button class="location-btn" id="locationBtn">📍 مکان</button>
     </div>
   </div>
 
@@ -458,16 +438,21 @@ body{
     const invitationContent = document.getElementById('invitationContent');
     const closeBtn = document.getElementById('closeBtn');
     const weddingMusic = document.getElementById('weddingMusic');
-    const locationToggle = document.getElementById('locationToggle');
+    const locationBtn = document.getElementById('locationBtn');
     const locationMenu = document.getElementById('locationMenu');
-    const shareBtn = document.getElementById('shareBtn');
 
-    // لینک‌های مختلف نقشه‌ها
+    // لینک‌های نقشه‌ها
     const googleMapsLink = 'https://maps.app.goo.gl/8dzN2KYJNfc1ViNf7';
-    const neshanLink = 'https://neshan.org/map?q=تالار%20پذیرایی%20شادی%20اصفهان'; // توجه: این لینک نمونه است
-    const baladLink = 'https://balad.ir'; // لینک نمونه
+    const neshanCoords = '32.6832,51.4031'; // مختصات اصفهان
+    const neshanLink = `https://neshan.org/map?query=${neshanCoords}`;
+    const baladCoords = '32.6832,51.4031'; // مختصات اصفهان
+    const baladLink = `https://balad.ir/search?address=اصفهان`;
 
     weddingMusic.volume = 0.5;
+
+    // تنظیم لینک‌ها
+    document.getElementById('neshan-link').href = neshanLink;
+    document.getElementById('balad-link').href = baladLink;
 
     // ایجاد قلب‌های متحرک
     function createFallingHeart() {
@@ -476,11 +461,11 @@ body{
       heart.className = 'falling-heart';
       heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
       
-      const randomX = Math.random() * (invitationContent.offsetWidth - 50);
+      const randomX = Math.random() * window.innerWidth;
       heart.style.left = randomX + 'px';
-      heart.style.top = '-50px';
+      heart.style.top = '50%';
       
-      invitationContent.appendChild(heart);
+      document.body.appendChild(heart);
       
       setTimeout(() => {
         heart.classList.add('animate');
@@ -513,7 +498,7 @@ body{
         particle.style.setProperty('--tx', tx + 'px');
         particle.style.setProperty('--ty', ty + 'px');
         
-        invitationContent.appendChild(particle);
+        document.body.appendChild(particle);
         
         setTimeout(() => {
           particle.classList.add('animate');
@@ -531,18 +516,15 @@ body{
 
     function startCelebration() {
       createFallingHeart();
-      
-      const centerX = invitationContent.offsetWidth / 2;
-      const centerY = invitationContent.offsetHeight / 2;
-      createFirework(centerX, centerY);
+      createFirework(window.innerWidth / 2, window.innerHeight / 2);
       
       heartInterval = setInterval(() => {
         createFallingHeart();
       }, 400);
       
       fireworkInterval = setInterval(() => {
-        const randomX = Math.random() * invitationContent.offsetWidth;
-        const randomY = Math.random() * invitationContent.offsetHeight * 0.6;
+        const randomX = Math.random() * window.innerWidth;
+        const randomY = Math.random() * window.innerHeight * 0.6;
         createFirework(randomX, randomY);
       }, 600);
     }
@@ -557,53 +539,31 @@ body{
         fireworkInterval = null;
       }
       
-      const allHearts = invitationContent.querySelectorAll('.falling-heart');
-      const allParticles = invitationContent.querySelectorAll('.firework-particle');
+      const allHearts = document.querySelectorAll('.falling-heart');
+      const allParticles = document.querySelectorAll('.firework-particle');
       
       allHearts.forEach(heart => heart.remove());
       allParticles.forEach(particle => particle.remove());
     }
 
     // منو لوکیشن
-    locationToggle.addEventListener('click', function(e) {
+    locationBtn.addEventListener('click', function(e) {
       e.stopPropagation();
       locationMenu.classList.toggle('show');
     });
 
-    // دکمه‌های نقشه‌ها
-    document.getElementById('neshan-btn').addEventListener('click', function() {
-      window.open(neshanLink, '_blank');
-      locationMenu.classList.remove('show');
-    });
-
-    document.getElementById('google-btn').addEventListener('click', function() {
-      window.open(googleMapsLink, '_blank');
-      locationMenu.classList.remove('show');
-    });
-
-    document.getElementById('balad-btn').addEventListener('click', function() {
-      window.open(baladLink, '_blank');
-      locationMenu.classList.remove('show');
-    });
-
-    // دکمه اشتراک‌گذاری
-    shareBtn.addEventListener('click', function() {
-      if (navigator.share) {
-        navigator.share({
-          title: 'دعوتنامه عروسی',
-          text: 'دعوتنامه عروسی محمد سجاد و زهرا',
-          url: window.location.href
-        }).catch(err => console.log('خطا:', err));
-      } else {
-        alert('لینک: ' + window.location.href);
-      }
-    });
-
     // بسته شدن منو با کلیک بیرون
     document.addEventListener('click', function(e) {
-      if (!locationMenu.contains(e.target) && e.target !== locationToggle) {
+      if (!locationMenu.contains(e.target) && e.target !== locationBtn) {
         locationMenu.classList.remove('show');
       }
+    });
+
+    // بسته شدن منو بعد از انتخاب
+    document.querySelectorAll('.location-menu a').forEach(link => {
+      link.addEventListener('click', function() {
+        locationMenu.classList.remove('show');
+      });
     });
 
     // باز کردن پاکت
