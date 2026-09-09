@@ -223,12 +223,6 @@ body{
 }
 
 /* فشفشه‌ها */
-.firework {
-  position: absolute;
-  pointer-events: none;
-  z-index: 3;
-}
-
 .firework-particle {
   position: absolute;
   pointer-events: none;
@@ -249,6 +243,109 @@ body{
 
 .firework-particle.animate {
   animation: explode 1.5s ease-out forwards;
+}
+
+/* دکمه‌های اطلاعات */
+.info-buttons{
+  position:absolute;
+  bottom:30px;
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:center;
+  gap:15px;
+  flex-wrap:wrap;
+  padding:0 20px;
+  z-index:6;
+}
+
+.info-btn{
+  background:linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+  border:none;
+  color:#fff;
+  padding:12px 24px;
+  border-radius:25px;
+  cursor:pointer;
+  font-size:14px;
+  font-weight:bold;
+  transition:all 0.3s ease;
+  box-shadow:0 5px 15px rgba(196, 69, 105, 0.4);
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-family:'B Nazanin','Tahoma','Arial',sans-serif;
+}
+
+.info-btn:hover{
+  transform:translateY(-3px);
+  box-shadow:0 8px 20px rgba(196, 69, 105, 0.6);
+}
+
+.info-btn:active{
+  transform:translateY(-1px);
+}
+
+/* منو لوکیشن */
+.location-menu{
+  position:absolute;
+  bottom:90px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#fff;
+  border-radius:15px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.3);
+  overflow:hidden;
+  z-index:7;
+  min-width:200px;
+  opacity:0;
+  pointer-events:none;
+  transition:all 0.3s ease;
+  animation:slideUpMenu 0.3s ease forwards;
+}
+
+@keyframes slideUpMenu{
+  from{
+    opacity:0;
+    transform:translateX(-50%) translateY(10px);
+  }
+  to{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+  }
+}
+
+.location-menu.show{
+  opacity:1;
+  pointer-events:all;
+}
+
+.location-menu button{
+  width:100%;
+  border:none;
+  background:none;
+  padding:15px 20px;
+  text-align:right;
+  cursor:pointer;
+  font-size:15px;
+  font-family:'B Nazanin','Tahoma','Arial',sans-serif;
+  font-weight:bold;
+  color:#333;
+  transition:all 0.2s ease;
+  border-bottom:1px solid #eee;
+}
+
+.location-menu button:last-child{
+  border-bottom:none;
+}
+
+.location-menu button:hover{
+  background:#f5f5f5;
+  padding-right:30px;
+}
+
+.location-menu button:before{
+  content:'📍 ';
+  margin-left:10px;
 }
 
 .close-btn{
@@ -299,6 +396,8 @@ body{
   .envelope-icon{font-size:35px;bottom:20px;}
   .invitation-content{width:95%;max-height:95vh;}
   .close-btn{width:40px;height:40px;font-size:24px;}
+  .info-buttons{gap:10px;}
+  .info-btn{padding:10px 18px;font-size:13px;}
 }
 
 @media (max-width:480px){
@@ -308,6 +407,8 @@ body{
   .envelope-icon{font-size:30px;}
   .close-btn{width:35px;height:35px;font-size:20px;}
   .hint-text {font-size:12px;}
+  .info-buttons{gap:8px;}
+  .info-btn{padding:8px 14px;font-size:12px;}
 }
 </style>
 </head>
@@ -331,6 +432,19 @@ body{
     <button class="close-btn" id="closeBtn">✕</button>
     <div class="invitation-content" id="invitationContent">
       <img src="https://raw.githubusercontent.com/sinapaghe984-hub/Sajad-Zahra-Wedding-Invitation/main/file_000000003c94820aad0d009238442cba.png" alt="دعوت‌نامه عروسی">
+      
+      <!-- منو لوکیشن -->
+      <div class="location-menu" id="locationMenu">
+        <button id="neshan-btn">🗺️ نشان</button>
+        <button id="google-btn">🗺️ گوگل مپ</button>
+        <button id="balad-btn">🗺️ بلد</button>
+      </div>
+      
+      <!-- دکمه‌های اطلاعات -->
+      <div class="info-buttons">
+        <button class="info-btn" id="locationToggle">📍 مکان</button>
+        <button class="info-btn" id="shareBtn">📤 اشتراک‌گذاری</button>
+      </div>
     </div>
   </div>
 
@@ -344,6 +458,14 @@ body{
     const invitationContent = document.getElementById('invitationContent');
     const closeBtn = document.getElementById('closeBtn');
     const weddingMusic = document.getElementById('weddingMusic');
+    const locationToggle = document.getElementById('locationToggle');
+    const locationMenu = document.getElementById('locationMenu');
+    const shareBtn = document.getElementById('shareBtn');
+
+    // لینک‌های مختلف نقشه‌ها
+    const googleMapsLink = 'https://maps.app.goo.gl/8dzN2KYJNfc1ViNf7';
+    const neshanLink = 'https://neshan.org/map?q=تالار%20پذیرایی%20شادی%20اصفهان'; // توجه: این لینک نمونه است
+    const baladLink = 'https://balad.ir'; // لینک نمونه
 
     weddingMusic.volume = 0.5;
 
@@ -360,12 +482,10 @@ body{
       
       invitationContent.appendChild(heart);
       
-      // شروع انیمیشن
       setTimeout(() => {
         heart.classList.add('animate');
       }, 10);
       
-      // حذف بعد از انیمیشن
       setTimeout(() => {
         heart.remove();
       }, 3500);
@@ -385,7 +505,6 @@ body{
         particle.style.top = y + 'px';
         particle.style.fontSize = (15 + Math.random() * 15) + 'px';
         
-        // زاویه تصادفی برای انفجار
         const angle = (i / 12) * Math.PI * 2;
         const distance = 80 + Math.random() * 40;
         const tx = Math.cos(angle) * distance;
@@ -406,25 +525,21 @@ body{
       }
     }
 
-    // شروع باران قلب‌ها و فشفشه‌ها
+    // شروع جشن
     let heartInterval = null;
     let fireworkInterval = null;
 
     function startCelebration() {
-      // قلب اول
       createFallingHeart();
       
-      // فشفشه در وسط
       const centerX = invitationContent.offsetWidth / 2;
       const centerY = invitationContent.offsetHeight / 2;
       createFirework(centerX, centerY);
       
-      // باران قلب‌ها
       heartInterval = setInterval(() => {
         createFallingHeart();
       }, 400);
       
-      // فشفشه‌های اضافی در نقاط تصادفی
       fireworkInterval = setInterval(() => {
         const randomX = Math.random() * invitationContent.offsetWidth;
         const randomY = Math.random() * invitationContent.offsetHeight * 0.6;
@@ -442,7 +557,6 @@ body{
         fireworkInterval = null;
       }
       
-      // حذف تمام عناصر باقی‌مانده
       const allHearts = invitationContent.querySelectorAll('.falling-heart');
       const allParticles = invitationContent.querySelectorAll('.firework-particle');
       
@@ -450,15 +564,56 @@ body{
       allParticles.forEach(particle => particle.remove());
     }
 
+    // منو لوکیشن
+    locationToggle.addEventListener('click', function(e) {
+      e.stopPropagation();
+      locationMenu.classList.toggle('show');
+    });
+
+    // دکمه‌های نقشه‌ها
+    document.getElementById('neshan-btn').addEventListener('click', function() {
+      window.open(neshanLink, '_blank');
+      locationMenu.classList.remove('show');
+    });
+
+    document.getElementById('google-btn').addEventListener('click', function() {
+      window.open(googleMapsLink, '_blank');
+      locationMenu.classList.remove('show');
+    });
+
+    document.getElementById('balad-btn').addEventListener('click', function() {
+      window.open(baladLink, '_blank');
+      locationMenu.classList.remove('show');
+    });
+
+    // دکمه اشتراک‌گذاری
+    shareBtn.addEventListener('click', function() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'دعوتنامه عروسی',
+          text: 'دعوتنامه عروسی محمد سجاد و زهرا',
+          url: window.location.href
+        }).catch(err => console.log('خطا:', err));
+      } else {
+        alert('لینک: ' + window.location.href);
+      }
+    });
+
+    // بسته شدن منو با کلیک بیرون
+    document.addEventListener('click', function(e) {
+      if (!locationMenu.contains(e.target) && e.target !== locationToggle) {
+        locationMenu.classList.remove('show');
+      }
+    });
+
     // باز کردن پاکت
     envelope.addEventListener('click', function() {
       this.classList.add('opened');
       
       setTimeout(() => {
         invitation.classList.add('show');
-        startCelebration(); // شروع جشن با قلب‌ها و فشفشه‌ها
+        startCelebration();
         
-        // پخش موسیقی
         weddingMusic.play().catch(err => {
           console.log('خطا:', err);
         });
@@ -470,6 +625,7 @@ body{
       e.stopPropagation();
       invitation.classList.remove('show');
       stopCelebration();
+      locationMenu.classList.remove('show');
       
       setTimeout(() => {
         envelope.classList.remove('opened');
