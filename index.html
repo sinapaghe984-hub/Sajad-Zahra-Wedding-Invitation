@@ -20,23 +20,6 @@ body{
   overflow:hidden;
 }
 
-/* قلب‌های متحرک */
-.heart {
-  position: fixed;
-  pointer-events: none;
-  z-index: 999;
-  font-size: 30px;
-  opacity: 0.7;
-}
-
-/* قلب‌های پشت عکس */
-.invitation-heart {
-  position: absolute;
-  pointer-events: none;
-  font-size: 25px;
-  opacity: 0.6;
-}
-
 .container{
   width:100%;
   height:100%;
@@ -105,7 +88,6 @@ body{
   box-shadow: 0 5px 15px rgba(196, 69, 105, 0.3);
 }
 
-/* دکوراسیون گلدار */
 .envelope-front::after{
   content:'🌹';
   position:absolute;
@@ -216,6 +198,27 @@ body{
   z-index:5;
 }
 
+/* قلب‌های روی عکس دعوتنامه */
+.invitation-heart {
+  position: absolute;
+  pointer-events: none;
+  font-size: 40px;
+  opacity: 0.8;
+  animation: heartFall 3s ease-in forwards;
+  z-index: 4;
+}
+
+@keyframes heartFall {
+  0% {
+    transform: translateY(-100px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(400px) scale(0.3);
+    opacity: 0;
+  }
+}
+
 .close-btn{
   position:absolute;
   top:20px;
@@ -241,7 +244,6 @@ body{
   box-shadow:0 8px 20px rgba(196, 69, 105, 0.6);
 }
 
-/* نشانگر "کلیک کنید" */
 .hint-text {
   position: absolute;
   bottom: -50px;
@@ -296,7 +298,7 @@ body{
   <div class="invitation" id="invitation">
     <button class="close-btn" id="closeBtn">✕</button>
     <div class="invitation-content" id="invitationContent">
-      <img src="https://github.com/Mamad73x2x/Sajad-zahra/raw/main/file_0000000060f08210b4ca0169d9e337b8.png" alt="دعوت‌نامه عروسی">
+      <img src="https://raw.githubusercontent.com/sinapaghe984-hub/Sajad-Zahra-Wedding-Invitation/main/file_000000003c94820aad0d009238442cba.png" alt="دعوت‌نامه عروسی">
     </div>
   </div>
 
@@ -310,109 +312,58 @@ body{
     const invitationContent = document.getElementById('invitationContent');
     const closeBtn = document.getElementById('closeBtn');
     const weddingMusic = document.getElementById('weddingMusic');
-    let isPlaying = false;
-    let heartsInterval = null;
-    let invitationHeartsInterval = null;
 
     weddingMusic.volume = 0.5;
 
-    // ایجاد قلب‌های متحرک (صفحه اصلی)
-    function createHearts() {
-      const heartCount = 30;
+    // ایجاد قلب‌های متحرک روی دعوتنامه
+    function createHeartOnInvitation() {
       const hearts = ['💕', '💗', '❤️', '💖'];
-
-      for (let i = 0; i < heartCount; i++) {
-        const heart = document.createElement('div');
-        heart.className = 'heart';
-        heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-        
-        const startX = Math.random() * window.innerWidth;
-        heart.style.left = startX + 'px';
-        heart.style.bottom = '-50px';
-        
-        document.body.appendChild(heart);
-
-        // انیمیشن بالا رفتن
-        let bottom = -50;
-        const speed = Math.random() * 2 + 1;
-        const sway = Math.random() * 2 - 1;
-        const duration = Math.random() * 3000 + 2000;
-        let currentX = startX;
-
-        const startTime = Date.now();
-        const rise = setInterval(() => {
-          const elapsed = Date.now() - startTime;
-          
-          bottom += speed;
-          currentX += sway * 0.5;
-          
-          heart.style.bottom = bottom + 'px';
-          heart.style.left = currentX + 'px';
-          
-          // تغییر opacity هنگام بالا رفتن
-          const opacity = 1 - (elapsed / duration);
-          heart.style.opacity = Math.max(0, opacity);
-
-          if (elapsed > duration || bottom > window.innerHeight) {
-            clearInterval(rise);
-            heart.remove();
-          }
-        }, 20);
-      }
-    }
-
-    // ایجاد قلب‌های پشت عکس
-    function createInvitationHearts() {
-      const heartCount = 8;
-      const hearts = ['💕', '💗', '❤️', '💖'];
-
-      for (let i = 0; i < heartCount; i++) {
-        const heart = document.createElement('div');
-        heart.className = 'invitation-heart';
-        heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-        
-        const randomX = Math.random() * 100;
-        const randomY = Math.random() * 100;
-        heart.style.left = randomX + '%';
-        heart.style.top = randomY + '%';
-        heart.style.animation = `float ${3 + Math.random() * 2}s ease-in-out infinite`;
-        heart.style.animationDelay = Math.random() * 2 + 's';
-        
-        invitationContent.appendChild(heart);
-      }
-    }
-
-    // شروع قلب‌های مستمر هنگام نمایش عکس
-    function startContinuousHearts() {
-      if (heartsInterval) return;
+      const heart = document.createElement('div');
+      heart.className = 'invitation-heart';
+      heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
       
-      createHearts(); // قلب‌های اولیه
-      heartsInterval = setInterval(createHearts, 1500); // هر 1.5 ثانیه
+      // موقعیت تصادفی در سمت عکس
+      const randomX = Math.random() * (invitationContent.offsetWidth - 50) + 25;
+      heart.style.left = randomX + 'px';
+      heart.style.top = '-50px';
+      
+      invitationContent.appendChild(heart);
+      
+      // حذف قلب بعد از انیمیشن
+      setTimeout(() => {
+        heart.remove();
+      }, 3000);
     }
 
-    // متوقف کردن قلب‌های مستمر
-    function stopContinuousHearts() {
-      if (heartsInterval) {
-        clearInterval(heartsInterval);
-        heartsInterval = null;
+    // شروع باران قلب‌ها
+    let heartInterval = null;
+    function startHeartRain() {
+      if (heartInterval) return;
+      
+      createHeartOnInvitation(); // قلب اول
+      heartInterval = setInterval(createHeartOnInvitation, 500); // هر 500ms یک قلب
+    }
+
+    // توقف باران قلب‌ها
+    function stopHeartRain() {
+      if (heartInterval) {
+        clearInterval(heartInterval);
+        heartInterval = null;
       }
     }
 
     // باز کردن پاکت
     envelope.addEventListener('click', function() {
       this.classList.add('opened');
-      createHearts(); // قلب‌های اولیه
       
       setTimeout(() => {
         invitation.classList.add('show');
-        startContinuousHearts(); // شروع قلب‌های مستمر
-        createInvitationHearts(); // اضافه کردن قلب‌های پشت عکس
+        startHeartRain(); // شروع قلب‌ها
         
         // پخش موسیقی خودکار
         weddingMusic.play().catch(err => {
           console.log('خطا:', err);
         });
-        isPlaying = true;
       }, 300);
     });
 
@@ -420,17 +371,16 @@ body{
     closeBtn.addEventListener('click', function(e) {
       e.stopPropagation();
       invitation.classList.remove('show');
-      stopContinuousHearts(); // متوقف کردن قلب‌های مستمر
+      stopHeartRain(); // توقف قلب‌ها
       
-      // حذف قلب‌های پشت عکس
-      const invitationHearts = invitationContent.querySelectorAll('.invitation-heart');
-      invitationHearts.forEach(heart => heart.remove());
+      // حذف تمام قلب‌های باقی‌مانده
+      const allHearts = invitationContent.querySelectorAll('.invitation-heart');
+      allHearts.forEach(heart => heart.remove());
       
       setTimeout(() => {
         envelope.classList.remove('opened');
         weddingMusic.pause();
         weddingMusic.currentTime = 0;
-        isPlaying = false;
       }, 600);
     });
 
